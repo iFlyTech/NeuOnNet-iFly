@@ -62,4 +62,8 @@ if not exist "prereq/deps/depends.marker" (
     cmake --build aquila.build  --config Release --target install
 
     git clone https://github.com/gabime/spdlog.git
-    cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_INSTALL
+    cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_INSTALL_PREFIX=./deps/spdlog -DCMAKE_BUILD_TYPE=Release -Sspdlog -Bspdlog.build
+    cmake --build spdlog.build  --config Release --target install
+
+    copy /y nul  deps/depends.marker
+)
