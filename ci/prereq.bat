@@ -40,3 +40,26 @@ if not exist "prereq/deps/boost.marker " (
 
 if not exist "prereq/build.env" (
     mkdir prereq
+    pushd prereq
+
+    python3 -m venv build.env
+    call build.env/bin/activate
+    python3 -m pip install --upgrade setuptools wheel
+
+    popd
+)
+
+if not exist "prereq/deps/depends.marker" (
+    mkdir prereq/deps
+    pushd prereq
+
+    git clone https://github.com/davisking/dlib.git
+    cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_INSTALL_PREFIX=./deps/dlib -DCMAKE_BUILD_TYPE=Release -DUSE_SSE2_INSTRUCTIONS=1 -DUSE_SSE4_INSTRUCTIONS=1 -DUSE_AVX_INSTRUCTIONS=1 -DDLIB_NO_GUI_SUPPORT=1 -Sdlib -Bdlib.build
+    cmake --build dlib.build  --config Release --target install
+
+    git clone https://github.com/sergeyrachev/aquila.git -b mfec
+    cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_INSTALL_PREFIX=./deps/aquila -DCMAKE_BUILD_TYPE=Release -Saquila -Baquila.build
+    cmake --build aquila.build  --config Release --target install
+
+    git clone https://github.com/gabime/spdlog.git
+    cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_INSTALL
