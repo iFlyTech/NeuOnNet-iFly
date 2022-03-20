@@ -52,4 +52,10 @@ set(CPACK_RPM_DEVEL_PACKAGE_REQUIRES "blas, lapack, atlas, jsoncpp-devel")
 set(CPACK_RPM_SAMPLE_PACKAGE_REQUIRES "ffmpeg-devel, jsoncpp-devel")
 
 set(CPACK_DEB_COMPONENT_INSTALL On)
-set(CPACK_DEBIAN_DEVEL_PACKAGE_DEPENDS "libopenblas-base, libblas3, libjsoncpp-dev, libjsonc
+set(CPACK_DEBIAN_DEVEL_PACKAGE_DEPENDS "libopenblas-base, libblas3, libjsoncpp-dev, libjsoncpp1, libopenblas-dev")
+set(CPACK_DEBIAN_SAMPLE_PACKAGE_DEPENDS "libavformat-dev, libavcodec-dev, libswscale-dev, libswresample-dev, libavutil-dev, libopenblas-dev")
+
+include(CPack)
+
+
+cmake_policy(POP)
