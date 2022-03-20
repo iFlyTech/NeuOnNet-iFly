@@ -35,4 +35,28 @@
 set(__jsoncpp_have_namespaced_targets OFF)
 set(__jsoncpp_have_interface_support OFF)
 if (NOT ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 3.0))
-    set(_
+    set(__jsoncpp_have_namespaced_targets ON)
+    set(__jsoncpp_have_interface_support ON)
+elseif (("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" EQUAL 2.8) AND "${CMAKE_PATCH_VERSION}" GREATER 10)
+    set(__jsoncpp_have_interface_support ON)
+endif ()
+
+# sets __jsoncpp_have_jsoncpplib based on whether or not we have a real imported jsoncpp_lib target.
+macro(_jsoncpp_check_for_real_jsoncpplib)
+    set(__jsoncpp_have_jsoncpplib FALSE)
+    if (TARGET jsoncpp_lib)
+        get_property(__jsoncpp_lib_type TARGET jsoncpp_lib PROPERTY TYPE)
+        # We make interface libraries. If an actual config module made it, it would be an imported library.
+        if (NOT __jsoncpp_lib_type STREQUAL "INTERFACE_LIBRARY")
+            set(__jsoncpp_have_jsoncpplib TRUE)
+        endif ()
+    endif ()
+    #message(STATUS "__jsoncpp_have_jsoncpplib ${__jsoncpp_have_jsoncpplib}")
+endmacro()
+
+include(FindPackageHandleStandardArgs)
+# Ensure that if this is TRUE later, it's because we set it.
+set(JSONCPP_FOUND FALSE)
+set(__jsoncpp_have_jsoncpplib FALSE)
+
+# See if we find a CMake config file - th
