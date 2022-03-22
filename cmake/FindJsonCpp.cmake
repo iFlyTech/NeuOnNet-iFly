@@ -59,4 +59,26 @@ include(FindPackageHandleStandardArgs)
 set(JSONCPP_FOUND FALSE)
 set(__jsoncpp_have_jsoncpplib FALSE)
 
-# See if we find a CMake config file - th
+# See if we find a CMake config file - there is no harm in calling this more than once,
+# and we need to call it at least once every CMake invocation to create the original
+# imported targets, since those don't stick around like cache variables.
+find_package(jsoncpp QUIET NO_MODULE)
+
+if (jsoncpp_FOUND)
+    # Build a string to help us figure out when to invalidate our cache variables.
+    # start with where we found jsoncpp
+    set(__jsoncpp_info_string "[${jsoncpp_DIR}]")
+
+    # part of the string to indicate if we found a real jsoncpp_lib (and what kind)
+    _jsoncpp_check_for_real_jsoncpplib()
+
+    macro(_jsoncpp_apply_map_config target)
+        if (MSVC)
+            # Can't do this - different runtimes, incompatible ABI, etc.
+            set(_jsoncpp_debug_fallback)
+        else ()
+            set(_jsoncpp_debug_fallback DEBUG)
+            #osvr_stash_map_config(DEBUG DEBUG RELWITHDEBINFO RELEASE MINSIZEREL NONE)
+        endif ()
+        # Appending, just in case using project or upstream fixes this.
+        set_property(TARGET ${target} APPEND PROPERTY MAP_IMPORTED_CONFIG_RELEASE RELEASE RELWITHDEBINFO MINSIZEREL NONE ${_jsoncpp_debug_fa
