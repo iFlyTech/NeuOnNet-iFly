@@ -120,4 +120,24 @@ if (jsoncpp_FOUND AND NOT __jsoncpp_info_string STREQUAL "${JSONCPP_CACHED_JSONC
     # if(__jsoncpp_have_jsoncpplib) is equivalent to if(TARGET jsoncpp_lib) except it excludes our
     # "invented" jsoncpp_lib interface targets, made for convenience purposes after this block.
 
-    if (__jsoncpp_have_jsoncpplib AND (TARGET jsoncpp_static
+    if (__jsoncpp_have_jsoncpplib AND (TARGET jsoncpp_static OR TARGET jsoncpp_lib_static) )
+
+        # A veritable cache of riches - we have both shared and static!
+        set(JSONCPP_IMPORTED_LIBRARY_SHARED jsoncpp_lib CACHE INTERNAL "" FORCE)
+        if(TARGET jsoncpp_static)
+            set(JSONCPP_IMPORTED_LIBRARY_STATIC jsoncpp_static CACHE INTERNAL "" FORCE)
+        else()
+            set(JSONCPP_IMPORTED_LIBRARY_STATIC jsoncpp_lib_static CACHE INTERNAL "" FORCE)
+        endif()
+        if (WIN32 OR CYGWIN OR MINGW)
+            # DLL platforms: static library should be default
+            set(JSONCPP_IMPORTED_LIBRARY ${JSONCPP_IMPORTED_LIBRARY_STATIC} CACHE INTERNAL "" FORCE)
+            set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED FALSE CACHE INTERNAL "" FORCE)
+        else ()
+            # Other platforms - might require PIC to be linked into shared libraries, so safest to prefer shared.
+            set(JSONCPP_IMPORTED_LIBRARY ${JSONCPP_IMPORTED_LIBRARY_SHARED} CACHE INTERNAL "" FORCE)
+            set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED TRUE CACHE INTERNAL "" FORCE)
+        endif ()
+
+    elseif (TARGET jsoncpp_static )
+        # Well, only one vari
