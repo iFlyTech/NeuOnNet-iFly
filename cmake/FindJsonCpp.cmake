@@ -100,4 +100,24 @@ if (jsoncpp_FOUND)
         list(APPEND __jsoncpp_info_string "[T]")
         _jsoncpp_apply_map_config(jsoncpp_static)
     else ()
-  
+        list(APPEND __jsoncpp_info_string "[]")
+    endif ()
+endif ()
+
+
+# If we found something, and it's not the exact same as what we've found before...
+# NOTE: The contents of this "if" block update only (internal) cache variables!
+# (since this will only get run the first CMake pass that finds jsoncpp or that finds a different/updated install)
+if (jsoncpp_FOUND AND NOT __jsoncpp_info_string STREQUAL "${JSONCPP_CACHED_JSONCPP_DIR_DETAILS}")
+    #message("Updating jsoncpp cache variables! ${__jsoncpp_info_string}")
+    set(JSONCPP_CACHED_JSONCPP_DIR_DETAILS "${__jsoncpp_info_string}" CACHE INTERNAL "" FORCE)
+    unset(JSONCPP_IMPORTED_LIBRARY_SHARED)
+    unset(JSONCPP_IMPORTED_LIBRARY_STATIC)
+    unset(JSONCPP_IMPORTED_LIBRARY)
+    unset(JSONCPP_IMPORTED_INCLUDE_DIRS)
+    unset(JSONCPP_IMPORTED_LIBRARY_IS_SHARED)
+
+    # if(__jsoncpp_have_jsoncpplib) is equivalent to if(TARGET jsoncpp_lib) except it excludes our
+    # "invented" jsoncpp_lib interface targets, made for convenience purposes after this block.
+
+    if (__jsoncpp_have_jsoncpplib AND (TARGET jsoncpp_static
