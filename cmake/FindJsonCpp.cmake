@@ -140,4 +140,20 @@ if (jsoncpp_FOUND AND NOT __jsoncpp_info_string STREQUAL "${JSONCPP_CACHED_JSONC
         endif ()
 
     elseif (TARGET jsoncpp_static )
-        # Well, only one vari
+        # Well, only one variant, but we know for sure that it's static.
+        set(JSONCPP_IMPORTED_LIBRARY_STATIC jsoncpp_static CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY jsoncpp_static CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED FALSE CACHE INTERNAL "" FORCE)
+    elseif (TARGET jsoncpp_lib_static)
+        # Well, only one variant, but we know for sure that it's static.
+        set(JSONCPP_IMPORTED_LIBRARY_STATIC jsoncpp_lib_static CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY jsoncpp_lib_static CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED FALSE CACHE INTERNAL "" FORCE)
+    elseif (__jsoncpp_have_jsoncpplib AND __jsoncpp_lib_type STREQUAL "STATIC_LIBRARY")
+        # We were able to figure out the mystery library is static!
+        set(JSONCPP_IMPORTED_LIBRARY_STATIC jsoncpp_lib CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY jsoncpp_lib CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED FALSE CACHE INTERNAL "" FORCE)
+
+    elseif (__jsoncpp_have_jsoncpplib AND __jsoncpp_lib_type STREQUAL "SHARED_LIBRARY")
+        # We were able to
