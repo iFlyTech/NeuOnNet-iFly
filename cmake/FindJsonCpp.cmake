@@ -156,4 +156,23 @@ if (jsoncpp_FOUND AND NOT __jsoncpp_info_string STREQUAL "${JSONCPP_CACHED_JSONC
         set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED FALSE CACHE INTERNAL "" FORCE)
 
     elseif (__jsoncpp_have_jsoncpplib AND __jsoncpp_lib_type STREQUAL "SHARED_LIBRARY")
-        # We were able to
+        # We were able to figure out the mystery library is shared!
+        set(JSONCPP_IMPORTED_LIBRARY_SHARED jsoncpp_lib CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY jsoncpp_lib CACHE INTERNAL "" FORCE)
+        set(JSONCPP_IMPORTED_LIBRARY_IS_SHARED TRUE CACHE INTERNAL "" FORCE)
+
+    elseif (__jsoncpp_have_jsoncpplib)
+        # One variant, and we have no idea if this is just an old version or if
+        # this is shared based on the target name alone. Hmm.
+        set(JSONCPP_IMPORTED_LIBRARY jsoncpp_lib CACHE INTERNAL "" FORCE)
+    endif ()
+
+    # Now, we need include directories. Can't just limit this to old CMakes, since
+    # new CMakes might be used to build projects designed to support older ones.
+    if (__jsoncpp_have_jsoncpplib)
+        get_property(__jsoncpp_interface_include_dirs TARGET jsoncpp_lib PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+        if (__jsoncpp_interface_include_dirs)
+            set(JSONCPP_IMPORTED_INCLUDE_DIRS "${__jsoncpp_interface_include_dirs}" CACHE INTERNAL "" FORCE)
+        endif ()
+    endif ()
+    if ((TARGET jsoncpp_static OR TARGET jsoncpp_lib_static) AND NOT JSONCPP_IMPO
