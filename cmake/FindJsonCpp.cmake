@@ -175,4 +175,29 @@ if (jsoncpp_FOUND AND NOT __jsoncpp_info_string STREQUAL "${JSONCPP_CACHED_JSONC
             set(JSONCPP_IMPORTED_INCLUDE_DIRS "${__jsoncpp_interface_include_dirs}" CACHE INTERNAL "" FORCE)
         endif ()
     endif ()
-    if ((TARGET jsoncpp_static OR TARGET jsoncpp_lib_static) AND NOT JSONCPP_IMPO
+    if ((TARGET jsoncpp_static OR TARGET jsoncpp_lib_static) AND NOT JSONCPP_IMPORTED_INCLUDE_DIRS)
+        if(TARGET jsoncpp_static)
+            get_property(__jsoncpp_interface_include_dirs TARGET jsoncpp_static PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+        else()
+            get_property(__jsoncpp_interface_include_dirs TARGET jsoncpp_lib_static PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+        endif()
+        if (__jsoncpp_interface_include_dirs)
+            set(JSONCPP_IMPORTED_INCLUDE_DIRS "${__jsoncpp_interface_include_dirs}" CACHE INTERNAL "" FORCE)
+        endif ()
+    endif ()
+endif ()
+
+# As a convenience...
+if (TARGET jsoncpp_static AND NOT TARGET jsoncpp_lib)
+    add_library(jsoncpp_lib INTERFACE)
+    target_link_libraries(jsoncpp_lib INTERFACE jsoncpp_static)
+elseif(TARGET jsoncpp_lib_static AND NOT TARGET jsoncpp_lib)
+    add_library(jsoncpp_lib INTERFACE)
+    target_link_libraries(jsoncpp_lib INTERFACE jsoncpp_lib_static)
+endif ()
+
+if (JSONCPP_IMPORTED_LIBRARY)
+    if (NOT JSONCPP_IMPORTED_INCLUDE_DIRS)
+        # OK, so we couldn't get it from the target... maybe we can figure it out from jsoncpp_DIR.
+
+        # take off the j
