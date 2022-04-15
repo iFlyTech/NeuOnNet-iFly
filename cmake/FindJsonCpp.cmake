@@ -200,4 +200,25 @@ if (JSONCPP_IMPORTED_LIBRARY)
     if (NOT JSONCPP_IMPORTED_INCLUDE_DIRS)
         # OK, so we couldn't get it from the target... maybe we can figure it out from jsoncpp_DIR.
 
-        # take off the j
+        # take off the jsoncpp component
+        get_filename_component(__jsoncpp_import_root "${jsoncpp_DIR}/.." ABSOLUTE)
+        set(__jsoncpp_hints "${__jsoncpp_import_root}")
+        # take off the cmake component
+        get_filename_component(__jsoncpp_import_root "${__jsoncpp_import_root}/.." ABSOLUTE)
+        list(APPEND __jsoncpp_hints "${__jsoncpp_import_root}")
+        # take off the lib component
+        get_filename_component(__jsoncpp_import_root "${__jsoncpp_import_root}/.." ABSOLUTE)
+        list(APPEND __jsoncpp_hints "${__jsoncpp_import_root}")
+        # take off one more component in case of multiarch lib
+        get_filename_component(__jsoncpp_import_root "${__jsoncpp_import_root}/.." ABSOLUTE)
+        list(APPEND __jsoncpp_hints "${__jsoncpp_import_root}")
+
+        # Now, search.
+        find_path(JsonCpp_INCLUDE_DIR
+            NAMES
+            json/json.h
+            PATH_SUFFIXES include jsoncpp include/jsoncpp
+            HINTS ${__jsoncpp_hints})
+        if (JsonCpp_INCLUDE_DIR)
+            mark_as_advanced(JsonCpp_INCLUDE_DIR)
+            # Note - this does not set it in the cac
