@@ -247,4 +247,32 @@ if (JSONCPP_FOUND)
             add_library(JsonCpp::JsonCppShared INTERFACE IMPORTED)
             set_target_properties(JsonCpp::JsonCppShared PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_IMPORTED_INCLUDE_DIRS}"
-                INTERFA
+                INTERFACE_LINK_LIBRARIES "${JSONCPP_IMPORTED_LIBRARY_SHARED}")
+        endif ()
+
+        if (JSONCPP_IMPORTED_LIBRARY_STATIC AND NOT TARGET JsonCpp::JsonCppStatic)
+            add_library(JsonCpp::JsonCppStatic INTERFACE IMPORTED)
+            set_target_properties(JsonCpp::JsonCppStatic PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_IMPORTED_INCLUDE_DIRS}"
+                INTERFACE_LINK_LIBRARIES "${JSONCPP_IMPORTED_LIBRARY_STATIC}")
+        endif ()
+
+        # Hide the stuff we didn't, and no longer, need.
+        if (NOT JsonCpp_LIBRARY)
+            unset(JsonCpp_LIBRARY CACHE)
+        endif ()
+        if (NOT JsonCpp_INCLUDE_DIR)
+            unset(JsonCpp_INCLUDE_DIR CACHE)
+        endif ()
+    endif ()
+
+    set(JSONCPP_LIBRARY ${JSONCPP_IMPORTED_LIBRARY})
+    set(JSONCPP_INCLUDE_DIRS ${JSONCPP_IMPORTED_INCLUDE_DIRS})
+    if (DEFINED JSONCPP_IMPORTED_LIBRARY_IS_SHARED)
+        set(JSONCPP_LIBRARY_IS_SHARED ${JSONCPP_IMPORTED_LIBRARY_IS_SHARED})
+    else ()
+        unset(JSONCPP_LIBRARY_IS_SHARED)
+    endif ()
+
+    if (JSONCPP_IMPORTED_LIBRARY_SHARED)
+        set(JSONCPP_LIBRARY_SHARED ${JSONCPP
