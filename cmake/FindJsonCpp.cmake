@@ -308,4 +308,28 @@ if (NOT JSONCPP_FOUND)
         set(_JSONCPP_LIB_NAMES jsoncpp)
         set(_JSONCPP_PATHSUFFIXES)
 
-        if (CMAKE_
+        if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+            list(APPEND _JSONCPP_PATHSUFFIXES
+                linux-gcc) # bit of a generalization but close...
+        endif ()
+        if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+            list(APPEND
+                _JSONCPP_LIB_NAMES
+                json_linux-gcc-${CMAKE_CXX_COMPILER_VERSION}_libmt
+                json_linux-gcc_libmt)
+            list(APPEND _JSONCPP_PATHSUFFIXES
+                linux-gcc-${CMAKE_CXX_COMPILER_VERSION})
+
+        elseif (MSVC)
+            if (MSVC_VERSION EQUAL 1200)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc6_libmt)
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc6)
+            elseif (MSVC_VERSION EQUAL 1300)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc7_libmt)
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc7)
+            elseif (MSVC_VERSION EQUAL 1310)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc71_libmt)
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc71)
+            elseif (MSVC_VERSION EQUAL 1400)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc8_libmt)
+                li
