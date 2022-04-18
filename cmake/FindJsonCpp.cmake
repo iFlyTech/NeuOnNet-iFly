@@ -221,4 +221,30 @@ if (JSONCPP_IMPORTED_LIBRARY)
             HINTS ${__jsoncpp_hints})
         if (JsonCpp_INCLUDE_DIR)
             mark_as_advanced(JsonCpp_INCLUDE_DIR)
-            # Note - this does not set it in the cac
+            # Note - this does not set it in the cache, in case we find it better at some point in the future!
+            set(JSONCPP_IMPORTED_INCLUDE_DIRS ${JsonCpp_INCLUDE_DIR})
+        endif ()
+    endif ()
+
+    find_package_handle_standard_args(JsonCpp
+        DEFAULT_MSG
+        jsoncpp_DIR
+        JSONCPP_IMPORTED_LIBRARY
+        JSONCPP_IMPORTED_INCLUDE_DIRS)
+endif ()
+
+if (JSONCPP_FOUND)
+    # Create any missing namespaced targets from the config module.
+    if (__jsoncpp_have_namespaced_targets)
+        if (JSONCPP_IMPORTED_LIBRARY AND NOT TARGET JsonCpp::JsonCpp)
+            add_library(JsonCpp::JsonCpp INTERFACE IMPORTED)
+            set_target_properties(JsonCpp::JsonCpp PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_IMPORTED_INCLUDE_DIRS}"
+                INTERFACE_LINK_LIBRARIES "${JSONCPP_IMPORTED_LIBRARY}")
+        endif ()
+
+        if (JSONCPP_IMPORTED_LIBRARY_SHARED AND NOT TARGET JsonCpp::JsonCppShared)
+            add_library(JsonCpp::JsonCppShared INTERFACE IMPORTED)
+            set_target_properties(JsonCpp::JsonCppShared PROPERTIES
+                INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_IMPORTED_INCLUDE_DIRS}"
+                INTERFA
