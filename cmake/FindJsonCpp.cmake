@@ -275,4 +275,37 @@ if (JSONCPP_FOUND)
     endif ()
 
     if (JSONCPP_IMPORTED_LIBRARY_SHARED)
-        set(JSONCPP_LIBRARY_SHARED ${JSONCPP
+        set(JSONCPP_LIBRARY_SHARED ${JSONCPP_IMPORTED_LIBRARY_SHARED})
+    endif ()
+
+    if (JSONCPP_IMPORTED_LIBRARY_STATIC)
+        set(JSONCPP_LIBRARY_STATIC ${JSONCPP_IMPORTED_LIBRARY_STATIC})
+    endif ()
+endif ()
+
+# Still nothing after looking for the config file: must go "old-school"
+if (NOT JSONCPP_FOUND)
+    # Invoke pkgconfig for hints
+    find_package(PkgConfig QUIET)
+    set(_JSONCPP_INCLUDE_HINTS)
+    set(_JSONCPP_LIB_HINTS)
+    if (PKG_CONFIG_FOUND)
+        pkg_search_module(_JSONCPP_PC QUIET jsoncpp)
+        if (_JSONCPP_PC_INCLUDE_DIRS)
+            set(_JSONCPP_INCLUDE_HINTS ${_JSONCPP_PC_INCLUDE_DIRS})
+        endif ()
+        if (_JSONCPP_PC_LIBRARY_DIRS)
+            set(_JSONCPP_LIB_HINTS ${_JSONCPP_PC_LIBRARY_DIRS})
+        endif ()
+        if (_JSONCPP_PC_LIBRARIES)
+            set(_JSONCPP_LIB_NAMES ${_JSONCPP_PC_LIBRARIES})
+        endif ()
+    endif ()
+
+    if (NOT _JSONCPP_LIB_NAMES)
+        # OK, if pkg-config wasn't able to give us a library name suggestion, then we may
+        # have to resort to some intense old logic.
+        set(_JSONCPP_LIB_NAMES jsoncpp)
+        set(_JSONCPP_PATHSUFFIXES)
+
+        if (CMAKE_
