@@ -332,4 +332,38 @@ if (NOT JSONCPP_FOUND)
                 list(APPEND _JSONCPP_PATHSUFFIXES msvc71)
             elseif (MSVC_VERSION EQUAL 1400)
                 list(APPEND _JSONCPP_LIB_NAMES json_vc8_libmt)
-                li
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc80)
+            elseif (MSVC_VERSION EQUAL 1500)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc9_libmt)
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc90)
+            elseif (MSVC_VERSION EQUAL 1600)
+                list(APPEND _JSONCPP_LIB_NAMES json_vc10_libmt)
+                list(APPEND _JSONCPP_PATHSUFFIXES msvc10 msvc100)
+            endif ()
+
+        elseif (MINGW)
+            list(APPEND _JSONCPP_LIB_NAMES
+                json_mingw_libmt)
+            list(APPEND _JSONCPP_PATHSUFFIXES mingw)
+
+        else ()
+            list(APPEND _JSONCPP_LIB_NAMES
+                json_suncc_libmt
+                json_vacpp_libmt)
+        endif ()
+    endif () # end of old logic
+
+    # Actually go looking.
+    find_path(JsonCpp_INCLUDE_DIR
+        NAMES
+        json/json.h
+        PATH_SUFFIXES jsoncpp
+        HINTS ${_JSONCPP_INCLUDE_HINTS})
+    find_library(JsonCpp_LIBRARY
+        NAMES
+        ${_JSONCPP_LIB_NAMES}
+        PATHS libs
+        PATH_SUFFIXES ${_JSONCPP_PATHSUFFIXES}
+        HINTS ${_JSONCPP_LIB_HINTS})
+
+    find_package_handle_s
