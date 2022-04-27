@@ -366,4 +366,28 @@ if (NOT JSONCPP_FOUND)
         PATH_SUFFIXES ${_JSONCPP_PATHSUFFIXES}
         HINTS ${_JSONCPP_LIB_HINTS})
 
-    find_package_handle_s
+    find_package_handle_standard_args(JsonCpp
+        DEFAULT_MSG
+        JsonCpp_INCLUDE_DIR
+        JsonCpp_LIBRARY)
+
+    if (JSONCPP_FOUND)
+        # We already know that the target doesn't exist, let's make it.
+        # TODO don't know why we get errors like:
+        # error: 'JsonCpp::JsonCpp-NOTFOUND', needed by 'bin/osvr_json_to_c', missing and no known rule to make it
+        # when we do the imported target commented out below. So, instead, we make an interface
+        # target with an alias. Hmm.
+
+        #add_library(JsonCpp::JsonCpp UNKNOWN IMPORTED)
+        #set_target_properties(JsonCpp::JsonCpp PROPERTIES
+        #	IMPORTED_LOCATION "${JsonCpp_LIBRARY}"
+        #	INTERFACE_INCLUDE_DIRECTORIES "${JsonCpp_INCLUDE_DIR}"
+        #	IMPORTED_LINK_INTERFACE_LANGUAGES "CXX")
+
+        set(JSONCPP_LIBRARY "${JsonCpp_LIBRARY}")
+        set(JSONCPP_INCLUDE_DIRS "${JsonCpp_INCLUDE_DIR}")
+        unset(JSONCPP_LIBRARY_IS_SHARED)
+
+        if (__jsoncpp_have_interface_support AND NOT TARGET jsoncpp_interface)
+            add_library(jsoncpp_interface INTERFACE IMPORTED GLOBAL)
+            set_target_properties(json
