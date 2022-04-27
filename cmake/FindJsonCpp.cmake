@@ -390,4 +390,18 @@ if (NOT JSONCPP_FOUND)
 
         if (__jsoncpp_have_interface_support AND NOT TARGET jsoncpp_interface)
             add_library(jsoncpp_interface INTERFACE IMPORTED GLOBAL)
-            set_target_properties(json
+            set_target_properties(jsoncpp_interface PROPERTIES
+                INTERFACE_LINK_LIBRARIES "${JsonCpp_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${JsonCpp_INCLUDE_DIR}")
+        endif ()
+        if (__jsoncpp_have_namespaced_targets)
+            if (NOT TARGET JsonCpp::JsonCpp)
+                add_library(JsonCpp::JsonCpp ALIAS jsoncpp_interface)
+            endif ()
+        endif ()
+    endif ()
+endif ()
+
+if (JSONCPP_FOUND)
+    mark_as_advanced(jsoncpp_DIR JsonCpp_INCLUDE_DIR JsonCpp_LIBRARY)
+endif ()
