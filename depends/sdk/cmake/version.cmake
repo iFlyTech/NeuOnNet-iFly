@@ -1,0 +1,5 @@
+function(configure_version symbols_space_name)
+    message(STATUS "You may specify version and revision variables to overload default all-zeroes filled values")
+    if (NOT DEFINED version)
+        set(version 0.0.0 CACHE INTERNAL "Version String")
+    endif ()
