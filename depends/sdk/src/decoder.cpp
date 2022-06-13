@@ -39,4 +39,31 @@ decoder::decoder(const AVCodecParameters &codecpar) {
 
 void decoder::put(const AVPacket* const packet) const {
 
-    int err = avcodec_send
+    int err = avcodec_send_packet(dec_ctx.get(), packet);
+    SPDLOG_DEBUG("Put packet {}, returned {}", packet, err);
+}
+
+frame_ptr decoder::get() const {
+    frame_ptr frame({av_frame_alloc(), [](AVFrame *p) { av_frame_free(&p); }});
+    int res = avcodec_receive_frame(dec_ctx.get(), frame.get());
+    if (AVERROR(EAGAIN) == res) {
+        SPDLOG_DEBUG("Decoder expect more data");
+        return {};
+    } else if (AVERROR_EOF == res) {
+        SPDLOG_DEBUG("Decoder reached EOF");
+        return {};
+    } else if (AVERROR(EINVAL) == res) {
+        SPDLOG_DEBUG("Decoder returned an error: ", errno);
+        assert((0, "It is very unlikely to be here!"));
+        return {};
+    }
+    SPDLOG_DEBUG("Get frame : Dts: {} Dts(msec): {} Pts: {} PktPts(msec): {} Size: {} Pos: {}",
+        frame->pkt_dts,
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::microseconds(frame->pkt_dts)).count(),
+        frame->pts,
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::microseconds(frame->pts)).count(),
+        frame->pkt_size,
+        frame->pkt_pos
+        );
+
+    r
