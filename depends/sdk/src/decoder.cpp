@@ -66,4 +66,9 @@ frame_ptr decoder::get() const {
         frame->pkt_pos
         );
 
-    r
+    return frame;
+}
+
+const AVCodecContext &decoder::parameters() const {
+    return *dec_ctx;
+}
