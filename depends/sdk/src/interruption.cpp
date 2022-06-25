@@ -16,4 +16,11 @@ void threads::interruption_t::wait(const std::chrono::milliseconds &delay) {
     });
 }
 
-void threads::interruption_t::interrupt
+void threads::interruption_t::interrupt() {
+    std::unique_lock<std::mutex> lck(guard);
+    has_signaled = true;
+    // Is not really needed but safer:
+    // http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one
+    lck.unlock();
+    condition.notify_all();
+}
