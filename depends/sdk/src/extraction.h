@@ -19,3 +19,7 @@ private:
     std::unique_ptr<audio_resample_t> aresample;
     std::unique_ptr<video_resample_t> vresample;
 };
+
+std::chrono::microseconds video_frame_duration(const std::string &media_filename);
+
+
