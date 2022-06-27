@@ -36,4 +36,36 @@ public:
     std::pair<ffmpeg::frame_ptr, std::chrono::microseconds> resample(ffmpeg::frame_ptr input_frame) {
 
         ffmpeg::frame_ptr resampled_frame{av_frame_alloc(), [](AVFrame *p) { av_frame_free(&p); }};
-        av_frame_copy_props(resampled_frame.get()
+        av_frame_copy_props(resampled_frame.get(), input_frame.get());
+
+        resampled_frame->sample_rate = sr;
+        resampled_frame->channel_layout = l;
+        resampled_frame->format = f;
+
+        int64_t input_pts = input_frame->pts * (sr * input_frame->sample_rate) / 1000000;
+        std::chrono::microseconds next_pts{  swr_next_pts(sc.get(), input_pts) * 1000000 / (sr * input_frame->sample_rate) };
+
+        int ret = swr_convert_frame(sc.get(), resampled_frame.get(), input_frame.get());
+
+        return {std::move(resampled_frame), next_pts};
+    }
+
+private:
+    size_t sr;
+    uint32_t l;
+    AVSampleFormat f;
+    std::unique_ptr<SwrContext, std::function<void(SwrContext *)>> sc;
+};
+
+class video_resample_t {
+public:
+    video_resample_t(size_t width, size_t height, AVPixelFormat format, size_t w, size_t h)
+        : w(w)
+        , h(h)
+        , f(AV_PIX_FMT_GRAY8)
+        , sc{sws_getContext(width, height, format,
+                            w, h, f,
+                            SWS_BICUBIC, NULL, NULL, NULL), sws_freeContext} {
+    }
+
+    std::pair<ffmpeg::frame_ptr, std::chrono::microseconds> resample(ffmpeg
