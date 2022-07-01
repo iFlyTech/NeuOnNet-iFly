@@ -7,4 +7,9 @@ namespace algorithm{
     private:
         singleton_t() = default;
     public:
-        static
+        static T& instance() {
+            static T instance;
+            return instance;
+        }
+    };
+}
