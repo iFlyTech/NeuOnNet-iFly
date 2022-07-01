@@ -30,4 +30,31 @@ void source_t::setup(ffmpeg::demuxer& dmx, const consumer &video, const consumer
             decoders[track.index] = vdec;
             consumers[track.index] = video;
         } else if(track.parameters.codec_type == AVMEDIA_TYPE_AUDIO){
-       
+            adec = std::make_shared<ffmpeg::decoder>(track.parameters);
+            decoders[track.index] = adec;
+            consumers[track.index] = audio;
+        }
+    }
+}
+
+void source_t::run(threads::interruption_t& interruption) {
+    auto au = dmx->get();
+    while( !interruption.done() && au ){
+
+        auto idx = au->packet->stream_index;
+        auto&& dec = decoders[idx];
+
+        dec->put(au->packet.get());
+        while(auto frame = dec->get()){
+            consumers[idx](std::move(frame));
+        }
+        au = dmx->get();
+    }
+
+    for (auto &&dec : decoders) {
+        dec.second->put(nullptr);
+        while(auto frame = dec.second->get()){
+            consumers[dec.first](std::move(frame));
+        }
+    }
+}
