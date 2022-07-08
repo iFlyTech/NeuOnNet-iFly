@@ -13,4 +13,11 @@ namespace ffmpeg{
         explicit track_adapter(const AVStream &stream);
 
     private:
-        std::unique_ptr<AVCodecParameters, std::function<void(AVCodecParam
+        std::unique_ptr<AVCodecParameters, std::function<void(AVCodecParameters *)>> _parameters{};
+    public:
+        const size_t index{0};
+        AVCodecParameters &parameters;
+    };
+}
+
+
