@@ -28,4 +28,14 @@ namespace mock {
             const std::map<std::string, std::string> &headers));
 
         MOCK_METHOD1(get, http::response_t(
-            const
+            const std::string &url));
+
+        MOCK_METHOD2(post, http::response_t(
+            const std::string &url,
+            const std::string &body));
+
+        MOCK_METHOD1(put, http::response_t(
+            const std::string &url));
+
+    };
+}
