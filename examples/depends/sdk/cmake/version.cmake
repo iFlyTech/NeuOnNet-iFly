@@ -28,4 +28,8 @@ function(configure_birthday symbols_space_name)
     set(birthday ${birthday_string} CACHE INTERNAL "The date of birth")
 
     configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../res/birthday.h.in ${CMAKE_CURRENT_BINARY_DIR}/generated/birthday.h)
-    configure_file(${CMAKE_CURRENT_FU
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../res/birthday.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/generated/birthday.cpp)
+
+    message(STATUS "You are able to use variable birthday to refer to build date")
+    message(STATUS "Don't forget to add CMAKE_CURRENT_BINARY_DIR/generated (which is ${CMAKE_CURRENT_BINARY_DIR}/generated) to your target include directories with PRIVATE BUILD_INTERFACE")
+endfunction()
