@@ -53,4 +53,9 @@ configure_file(res/centos-8.Dockerfile.in centos-8.Dockerfile @ONLY)
 configure_file(res/ubuntu-18.Dockerfile.in ubuntu-18.Dockerfile @ONLY)
 
 install(DIRECTORY .
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/neuon/
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/neuon/examples
+    COMPONENT sample)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/arch.Dockerfile ${CMAKE_CURRENT_BINARY_DIR}/centos-8.Dockerfile ${CMAKE_CURRENT_BINARY_DIR}/ubuntu-18.Dockerfile
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/neuon/examples/ci
+    COMPONENT sample)
