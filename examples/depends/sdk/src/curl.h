@@ -30,4 +30,19 @@ namespace http{
         static std::string endpoint(const std::string &base_url, const std::string &url);
         static std::string sanitize_base_url(const std::string url);
         static std::string sanitize_entrypoint_url(const std::string url);
-        static response_t sanitize_response(const CURLcode code, con
+        static response_t sanitize_response(const CURLcode code, const response_t& response);
+
+    protected:
+        struct payload_t {
+            const char *value;
+            size_t rest;
+        };
+
+    private:
+        typedef std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> curl_ptr;
+    private:
+        std::mutex curl_guard;
+        curl_ptr curl;
+        std::string base_url;
+    };
+}
