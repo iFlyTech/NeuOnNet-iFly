@@ -54,4 +54,21 @@ frame_ptr decoder::get() const {
         return {};
     } else if (AVERROR(EINVAL) == res) {
         SPDLOG_DEBUG("Decoder returned an error: ", errno);
-        asser
+        assert((0, "It is very unlikely to be here!"));
+        return {};
+    }
+    SPDLOG_DEBUG("Get frame : Dts: {} Dts(msec): {} Pts: {} PktPts(msec): {} Size: {} Pos: {}",
+        frame->pkt_dts,
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::microseconds(frame->pkt_dts)).count(),
+        frame->pts,
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::microseconds(frame->pts)).count(),
+        frame->pkt_size,
+        frame->pkt_pos
+        );
+
+    return frame;
+}
+
+const AVCodecContext &decoder::parameters() const {
+    return *dec_ctx;
+}
