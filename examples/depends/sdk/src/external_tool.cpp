@@ -64,4 +64,10 @@ void external_tool_t::interrupt() const {
 std::vector<const char *> external_tool_t::arguments(const std::string& exec, const std::vector <std::string> &args) {
     std::vector<const char *> argv;
     argv.push_back(exec.c_str());
-    std::transform(args.begin(), args
+    std::transform(args.begin(), args.end(), std::back_inserter(argv), [](const std::string &s) {
+        return s.c_str();
+    });
+    argv.push_back(nullptr);
+
+    return argv;
+}
