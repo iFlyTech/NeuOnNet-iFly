@@ -21,4 +21,18 @@ extraction_t::extraction_t(const std::string &media_filename, size_t target_vide
     const auto &vparams = src->vdec->parameters();
     const auto &aparams = src->adec->parameters();
     aresample = std::unique_ptr<audio_resample_t>(new audio_resample_t(aparams.channel_layout, aparams.sample_fmt, aparams.sample_rate, target_audio_samplerate));
-    vresample = std::unique_
+    vresample = std::unique_ptr<video_resample_t>(new video_resample_t(vparams.width, vparams.height, vparams.pix_fmt,
+                                                   target_video_height * vparams.width / vparams.height, target_video_height));
+}
+
+std::chrono::microseconds video_frame_duration(const std::string &media_filename) {
+    ffmpeg::demuxer dmx(media_filename);
+    auto tracks = dmx.tracks();
+    while (auto au = dmx.get()) {
+        auto idx = au->packet->stream_index;
+        if (tracks[idx].parameters.codec_type == AVMEDIA_TYPE_VIDEO) {
+            return std::chrono::microseconds(au->packet->duration);
+        }
+    }
+    return std::chrono::microseconds(0);
+}
