@@ -15,4 +15,6 @@ namespace datetime{
     uint64_t pack(const ntp_t &value);
     ntp_t unpack(uint64_t value);
 
-    ntp_t from_iso8601(const std::string &st
+    ntp_t from_iso8601(const std::string &str);
+}
+
