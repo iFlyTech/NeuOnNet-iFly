@@ -20,4 +20,9 @@ bool options::is_args_valid(int argc, const char * const * argv, const boost::pr
 
     if (varmap.count("help") || varmap.empty()) {
         cout << info << std::endl;
-        cout 
+        cout << opt_desc << std::endl;
+        return false;
+    }
+
+    return true;
+}
