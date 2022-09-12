@@ -54,4 +54,41 @@ private:
     size_t sr;
     uint32_t l;
     AVSampleFormat f;
-    std::unique_ptr<SwrContext, std::function<voi
+    std::unique_ptr<SwrContext, std::function<void(SwrContext *)>> sc;
+};
+
+class video_resample_t {
+public:
+    video_resample_t(size_t width, size_t height, AVPixelFormat format, size_t w, size_t h)
+        : w(w)
+        , h(h)
+        , f(AV_PIX_FMT_GRAY8)
+        , sc{sws_getContext(width, height, format,
+                            w, h, f,
+                            SWS_BICUBIC, NULL, NULL, NULL), sws_freeContext} {
+    }
+
+    std::pair<ffmpeg::frame_ptr, std::chrono::microseconds> resample(ffmpeg::frame_ptr frame) {
+
+        ffmpeg::frame_ptr out({av_frame_alloc(), [](AVFrame *p) { av_frame_free(&p); }});
+
+        av_frame_copy_props(out.get(), frame.get());
+        out->width = w;
+        out->height = h;
+        out->format = f;
+
+        int ret = av_frame_get_buffer(out.get(), 0);
+
+        int height = sws_scale(sc.get(), (const uint8_t *const *) frame->data, frame->linesize, 0, frame->height, out->data, out->linesize);
+
+        return {std::move(out), std::chrono::microseconds{out->pts}};
+    }
+
+private:
+    size_t w;
+    size_t h;
+    AVPixelFormat f;
+    std::unique_ptr<SwsContext, decltype(&sws_freeContext)> sc;
+};
+
+
