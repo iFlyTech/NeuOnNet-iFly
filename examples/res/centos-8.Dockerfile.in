@@ -1,0 +1,8 @@
+FROM centos:8
+LABEL version="@version_revision@"
+
+RUN yum -y install epel-release
+RUN rpm -Uvh https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
+
+RUN yum -y install --enablerepo=PowerTools ffmpeg-devel ffmpeg-libs blas-devel lapack-devel
+RUN yum -y install --enablerepo=PowerTools gcc make gcc gcc
