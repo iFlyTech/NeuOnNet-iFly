@@ -59,4 +59,35 @@ TEST(ntp, bad_value_good_format){
 }
 
 TEST(ntp, bad_input){
-        EXPECT_THROW(from_iso8601("A1900-01-01 99:99
+        EXPECT_THROW(from_iso8601("A1900-01-01 99:99:01"), std::exception);
+}
+
+TEST(ntp, from_iso8601_silently_ignore_zone){
+
+    ntp_t value = from_iso8601("1900-01-01 00:00:01Z");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01Z");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01-01");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01-01:00");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01-23:30");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01+01");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01+01:02");
+    ASSERT_EQ(1, value.seconds);
+
+    value = from_iso8601("1900-01-01 00:00:01+0100");
+    ASSERT_EQ(1, value.seconds);
+}
