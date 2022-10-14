@@ -28,4 +28,4 @@ WORKDIR /home/user
 
 # run the application
 ENV LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
-ENTRYPOINT ["/home/user/@CMAKE_INSTALL_PREFIX@/bin/neuon-sample", "-m", "@CMAKE_INSTALL_PREFIX@/share/neuon/res/model.pb", "-l", "@CMAKE_INSTALL_PREFIX@/
+ENTRYPOINT ["/home/user/@CMAKE_INSTALL_PREFIX@/bin/neuon-sample", "-m", "@CMAKE_INSTALL_PREFIX@/share/neuon/res/model.pb", "-l", "@CMAKE_INSTALL_PREFIX@/share/neuon/res/shape_predictor_68_face_landmarks.dat", "-n", "@CMAKE_INSTALL_PREFIX@/share/neuon/res/normale.json", "-i"]
