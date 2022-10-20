@@ -56,4 +56,23 @@ int main(int argc, char **argv) {
     po::options_description opt_desc("Options");
     opt_desc.add_options()
                 ("help,h", "Produce this message")
-                ("input-media,i", po::value(&media_filename)->required(), "Input media clip t
+                ("input-media,i", po::value(&media_filename)->required(), "Input media clip to detect A/V sync")
+                ("model,m", po::value(&model_filename)->required()->default_value(model_filename), "Neural Network Model")
+                ("normalization,n", po::value(&norma_filename)->required()->default_value(norma_filename), "Neural Network Normalization Set")
+                ("landmarks,l", po::value(&face_landmark_db_filename)->required()->default_value(face_landmark_db_filename), "Face landmarks DB")
+                ("license", po::value(&license_filename)->default_value(license_filename), "License file");
+
+
+    //logging::info::sink() = std::make_shared<logging::boost_sink_t>();
+
+
+    po::positional_options_description pos_opt_desc;
+    po::variables_map varmap;
+    if (!options::is_args_valid(argc, argv, opt_desc, pos_opt_desc, varmap, std::cerr, std::cout)) {
+        return 1;
+    }
+
+    std::unique_ptr<neuon_context_t, decltype(&neuon_free_engine)> neuon{nullptr, neuon_free_engine};
+
+    const uint64_t target_audio_samplerate = neuon_estimate_target_audio_samplerate(video_frame_duration(media_filename).count());
+    const s
