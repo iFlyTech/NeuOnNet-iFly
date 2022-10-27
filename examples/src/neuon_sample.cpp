@@ -75,4 +75,30 @@ int main(int argc, char **argv) {
     std::unique_ptr<neuon_context_t, decltype(&neuon_free_engine)> neuon{nullptr, neuon_free_engine};
 
     const uint64_t target_audio_samplerate = neuon_estimate_target_audio_samplerate(video_frame_duration(media_filename).count());
-    const s
+    const size_t target_video_height = 720;
+
+    extraction_t extraction(media_filename, target_video_height, target_audio_samplerate,
+        [&neuon](ffmpeg::frame_ptr frame, const std::chrono::microseconds & pts){
+            neuon_put_video(neuon.get(), frame->data[0], frame->linesize[0] * frame->height, frame->width, frame->height, frame->linesize[0], pts.count());
+        },
+        [&neuon](ffmpeg::frame_ptr sample, const std::chrono::microseconds & pts){
+            neuon_put_audio(neuon.get(), sample->data[0], sample->linesize[0], sample->nb_samples, pts.count());
+        }
+    );
+
+    statistic_t statistic{};
+
+    neuon_user_data_t user_data{};
+    user_data.opaque = &statistic;
+    user_data.on_result = print_result;
+
+    neuon_options_t options{};
+    options.target_audio_samplerate = target_audio_samplerate;
+
+    neuon_logging_t logging{};
+    logging.opaque = nullptr;
+    logging.error = log_error;
+    logging.info = log_info;
+    logging.debug = log_debug;
+
+    neuon.reset(neuon_create_engine(model_filename.c_str(), norma_filename.c_str(), face_landmark_db_filename.c_str(), license_filename.c_s
