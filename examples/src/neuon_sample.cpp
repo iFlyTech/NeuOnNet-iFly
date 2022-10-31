@@ -101,4 +101,18 @@ int main(int argc, char **argv) {
     logging.info = log_info;
     logging.debug = log_debug;
 
-    neuon.reset(neuon_create_engine(model_filename.c_str(), norma_filename.c_str(), face_landmark_db_filename.c_str(), license_filename.c_s
+    neuon.reset(neuon_create_engine(model_filename.c_str(), norma_filename.c_str(), face_landmark_db_filename.c_str(), license_filename.c_str(), &options, &logging, &user_data));
+
+    if(!neuon){
+        return EXIT_FAILURE;
+    }
+
+    threads::interruption_t interruption;
+    posix::sighandler_t<SIGINT>::assign([&interruption](int signal) { interruption.interrupt(); });
+    posix::sighandler_t<SIGTERM>::assign([&interruption](int signal) { interruption.interrupt(); });
+
+    extraction.src->run(interruption);
+
+    std::cout << "Checked " << statistic.sync_samples + statistic.nosync_samples << " data samples " << "The stream has " << ((statistic.sync_samples < statistic.nosync_samples) ? "no " : "") << "A/V sync " << "(S:" << statistic.sync_samples << ", N:" << statistic.nosync_samples << ")" << std::endl;
+    return EXIT_SUCCESS;
+}
