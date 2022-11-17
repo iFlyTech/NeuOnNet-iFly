@@ -9,4 +9,6 @@ FILELIST=$5
 
 while IFS= read -r video
 do
-    ../cmake-build-relwithdebinfo/neuon-data -i "${INFOLDER}/${video}" -a ${ANSWER} -o "${
+    ../cmake-build-relwithdebinfo/neuon-data -i "${INFOLDER}/${video}" -a ${ANSWER} -o "${OUTFOLDER}/${video}.data" -l ${FACEMARK}
+done < "$FILELIST"
+
