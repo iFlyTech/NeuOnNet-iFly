@@ -40,4 +40,33 @@ add_executable(neuon-data
     ../depends/sdk/src/demuxer.cpp
     ../depends/sdk/src/decoder.cpp
     ../depends/sdk/src/interruption.cpp
-    ../de
+    ../depends/sdk/src/track_adapter.cpp
+    ../depends/sdk/src/access_unit_adapter.cpp
+    ../depends/sdk/src/resample.cpp
+    ../depends/sdk/src/options.cpp
+    src/neuon_cxx.cpp
+    src/configuration.cpp
+    )
+target_link_libraries(neuon-data PRIVATE Aquila::Aquila dlib::dlib Threads::Threads Boost::program_options Boost::headers FFMPEG::avcodec FFMPEG::avformat FFMPEG::swscale FFMPEG::swresample spdlog::spdlog)
+target_compile_features(neuon-data PRIVATE cxx_std_17)
+set_target_properties(neuon-data PROPERTIES INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+target_include_directories(neuon-data
+    PRIVATE src/
+    ../depends/sdk/src
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    )
+install(TARGETS neuon-data DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT internal)
+
+add_library(neuon
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/version.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/birthday.cpp
+    src/license.cpp
+    src/model.cpp
+    src/tensorflow_api.cpp
+    src/tensorflow_dynamic.cpp
+    src/tensorflow_static.cpp
+    src/neuon_c.cpp
+    src/neuon_cxx.cpp
+    src/demo.cpp
+    src/configuration.cpp
+    src/speech_dete
