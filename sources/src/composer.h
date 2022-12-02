@@ -37,4 +37,37 @@ namespace neuon {
 
         composer_t(size_t frames, size_t samples, const handler_t &handler)
             : frames(frames)
-  
+            , samples(samples)
+            , handler(handler) {
+
+        }
+
+        void add_video(const std::chrono::microseconds &pts, dlib::array2d<uint8_t> &&feature) {
+
+            assert(pts.count() >= 0);
+
+            if (!feature.size()) {
+                flush(pts, audio_features);
+                flush(pts, video_features);
+                return;
+            }
+
+            video_features.emplace(pts, std::move(feature));
+            check_completeness(video_features, audio_features);
+        }
+
+        void add_audio(const std::chrono::microseconds &pts, dlib::array2d<double> &&feature) {
+
+            assert(pts.count() >= 0);
+            audio_features.emplace(pts, std::move(feature));
+            check_completeness(video_features, audio_features);
+        }
+
+        void check_completeness(
+            std::map<std::chrono::microseconds, dlib::array2d<uint8_t>> &video_features,
+            std::map<std::chrono::microseconds, dlib::array2d<double>> &audio_features) {
+            if (video_features.size() <= frames) {
+                return;
+            }
+
+            auto first_video_pts = v
