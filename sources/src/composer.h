@@ -123,4 +123,25 @@ namespace neuon {
                 audio_deltadelta_set = dlib::join_cols(audio_deltadelta_set, delta);
             }
 
-            audio_set = dlib::join_cols(audio_set, audio_de
+            audio_set = dlib::join_cols(audio_set, audio_delta_set);
+            audio_set = dlib::join_cols(audio_set, audio_deltadelta_set);
+
+            handler(video_set, first_video_pts, last_video_pts, audio_set, first_audio_pts, last_audio_pts);
+
+            flush(last_video_pts, video_features);
+            flush(last_video_pts, audio_features);
+        }
+
+        template<typename T>
+        void flush(const std::chrono::microseconds &pts, std::map<std::chrono::microseconds, T> &features) {
+            while (features.begin() != features.end() && features.begin()->first < pts) {
+                features.erase(features.begin());
+            }
+        }
+
+    private:
+        handler_t handler;
+        std::map<std::chrono::microseconds, dlib::array2d<uint8_t>> video_features;
+        std::map<std::chrono::microseconds, dlib::array2d<double>> audio_features;
+    };
+}
