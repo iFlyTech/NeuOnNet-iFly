@@ -69,4 +69,26 @@ add_library(neuon
     src/neuon_cxx.cpp
     src/demo.cpp
     src/configuration.cpp
-    src/speech_dete
+    src/speech_detection.cpp
+    src/face_detection.cpp
+    src/log.cpp
+    )
+add_library(neuon::neuon ALIAS neuon)
+target_link_libraries(neuon PRIVATE Threads::Threads JsonCpp::JsonCpp Boost::headers Aquila::Aquila dlib::dlib Tensorflow::Tensorflow Boost::filesystem spdlog::spdlog PUBLIC neuon::headers )
+target_compile_features(neuon PRIVATE cxx_std_17)
+set_target_properties(neuon PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(neuon PROPERTIES INSTALL_RPATH "$ORIGIN")
+set_target_properties(neuon PROPERTIES C_VISIBILITY_PRESET hidden)
+set_target_properties(neuon PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(neuon PROPERTIES VISIBILITY_INLINES_HIDDEN On)
+target_compile_definitions(neuon PRIVATE BOOST_UBLAS_INLINE= NEUON_ORIGINAL_BUILD )
+target_include_directories(neuon
+    PRIVATE src/
+    ../depends/sdk/src
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    )
+
+install(TARGETS neuon EXPORT neuon-library
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel NAMELINK_COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTA
