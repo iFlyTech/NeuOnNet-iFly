@@ -107,4 +107,7 @@ configure_file(src/details/setup.py.in details/setup.py @ONLY)
 add_custom_target(neuon-details-package ALL ${Python3_EXECUTABLE} setup.py bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY details)
 
 set(NEUON_PACKAGE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/src/show")
-configure_file(src/show/setup.py.in show/setup.py @ONL
+configure_file(src/show/setup.py.in show/setup.py @ONLY)
+add_custom_target(neuon-show-package ALL ${Python3_EXECUTABLE} setup.py bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY show)
+
+cmake_policy(POP)
