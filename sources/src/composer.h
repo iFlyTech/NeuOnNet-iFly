@@ -101,4 +101,26 @@ namespace neuon {
                 dlib::matrix<double> sample = dlib::mat(audio_it->second);
                 audio_set = dlib::join_cols(audio_set, sample);
             }
-            
+            auto last_audio_pts = audio_it->first;
+
+            dlib::matrix<double> audio_delta_set;
+            for (int64_t j = 0; j < audio_set.nr(); ++j) {
+
+                int64_t prev_idx = clamp<int64_t>(j - 1, 0, audio_set.nr() - 1);
+                int64_t next_idx = clamp<int64_t>(j + 1, 0, audio_set.nr() - 1);
+
+                dlib::matrix<double> delta = (dlib::rowm(audio_set, next_idx) - dlib::rowm(audio_set, prev_idx)) / 2;
+                audio_delta_set = dlib::join_cols(audio_delta_set, delta);
+            }
+
+            dlib::matrix<double> audio_deltadelta_set;
+            for (int64_t j = 0; j < audio_delta_set.nr(); ++j) {
+
+                int64_t prev_idx = clamp<int64_t>(j - 1, 0, audio_delta_set.nr() - 1);
+                int64_t next_idx = clamp<int64_t>(j + 1, 0, audio_delta_set.nr() - 1);
+
+                dlib::matrix<double> delta = (dlib::rowm(audio_delta_set, next_idx) - dlib::rowm(audio_delta_set, prev_idx)) / 2;
+                audio_deltadelta_set = dlib::join_cols(audio_deltadelta_set, delta);
+            }
+
+            audio_set = dlib::join_cols(audio_set, audio_de
