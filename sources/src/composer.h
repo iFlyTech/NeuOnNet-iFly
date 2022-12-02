@@ -70,4 +70,35 @@ namespace neuon {
                 return;
             }
 
-            auto first_video_pts = v
+            auto first_video_pts = video_features.begin()->first;
+            flush(first_video_pts, audio_features);
+
+            if (audio_features.size() <= samples) {
+                return;
+            }
+
+            auto video_last = video_features.begin();
+            std::advance(video_last, frames);
+
+            if (video_last->first >= audio_features.crbegin()->first) {
+                return;
+            }
+
+            auto video_it = video_features.begin();
+            dlib::matrix<uint8_t> video_set;
+            for (auto j = 0; j < frames; ++j) {
+                video_set = dlib::join_cols(video_set, dlib::mat(video_it->second));
+                ++video_it;
+            }
+            auto last_video_pts = video_it->first;
+
+            dlib::matrix<double> audio_set;
+            auto audio_it = audio_features.begin();
+            auto first_audio_pts = audio_it->first;
+
+            size_t i = 0;
+            for (; i < samples; ++audio_it, i++) {
+                dlib::matrix<double> sample = dlib::mat(audio_it->second);
+                audio_set = dlib::join_cols(audio_set, sample);
+            }
+            
