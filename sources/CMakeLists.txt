@@ -91,4 +91,20 @@ target_include_directories(neuon
 install(TARGETS neuon EXPORT neuon-library
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel NAMELINK_COMPONENT devel
-    RUNTIME DESTINATION ${CMAKE_INSTA
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+install(EXPORT neuon-library NAMESPACE neuon:: DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/neuon/cmake FILE neuon-targets.cmake COMPONENT devel)
+install(FILES res/model.pb res/normale.json res/shape_predictor_68_face_landmarks.dat DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/neuon/res COMPONENT runtime)
+
+set(NEUON_PACKAGE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/src/gym")
+configure_file(src/gym/setup.py.in gym/setup.py @ONLY)
+add_custom_target(neuon-gym-package ALL ${Python3_EXECUTABLE} setup.py bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY gym)
+
+set(NEUON_PACKAGE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/src/details")
+configure_file(src/details/setup.py.in details/setup.py @ONLY)
+add_custom_target(neuon-details-package ALL ${Python3_EXECUTABLE} setup.py bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY details)
+
+set(NEUON_PACKAGE_LOCATION "${CMAKE_CURRENT_LIST_DIR}/src/show")
+configure_file(src/show/setup.py.in show/setup.py @ONL
