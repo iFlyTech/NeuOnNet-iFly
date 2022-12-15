@@ -38,4 +38,28 @@ def main():
         distance_dataset = dataset.require_dataset('distance', shape=(n, ), dtype='uint8',  chunks=True, maxshape=(None, ), compression="gzip", compression_opts=9)
         distance_dataset.dims[0].label = 'n'
 
-        timestamp_dataset = dataset.require_dataset('timestamps', shape=(n, 4), dty
+        timestamp_dataset = dataset.require_dataset('timestamps', shape=(n, 4), dtype='uint64', chunks=True, maxshape=(None, 4), compression="gzip", compression_opts=2)
+        timestamp_dataset.dims[0].label = 'n'
+        timestamp_dataset.dims[1].label = 'microseconds'
+
+        percents = None
+        for index, distance_value, picture_filename, mfcc_filename, *rest in datalist.itertuples():
+            picture = imageio.imread(picture_filename)
+            mfcc = numpy.loadtxt(mfcc_filename)
+
+            v = numpy.reshape(picture, (-1, 60, 100, 1))
+            a = numpy.reshape(mfcc, (-1, 45, 15, 1), )
+
+            video_dataset[index] = v
+            audio_dataset[index] = a
+            timestamp_dataset[index] = rest
+            distance_dataset[index] = distance_value
+
+            progress = int((index * 1. / n) * 10000)
+            if percents != progress:
+                percents = progress
+                print("%3.2f%%" % (percents / 100.))
+
+
+if __name__ == '__main__':
+    main()
