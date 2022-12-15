@@ -42,4 +42,4 @@ class scale_t:
         self.standard = standardization_t(scaled_mean, scaled_std)
 
     def __call__(self, data):
-        return self.standard(self.norma(da
+        return self.standard(self.norma(data))
