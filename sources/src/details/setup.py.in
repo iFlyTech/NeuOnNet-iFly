@@ -32,4 +32,12 @@ setuptools.setup(
         'numpy',
         'pandas',
         'pydot',
-        'pypars
+        'pyparsing',
+        'tensorflow',
+        'neuon-details',
+        "dask",
+        "toolz"
+    ]
+)
+
+
