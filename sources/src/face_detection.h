@@ -25,4 +25,27 @@ namespace neuon{
                 auto right_most_x = shape.part(54).x();
 
                 auto top_most_y = shape.part(52).y();
-                a
+                auto bottom_most_y = shape.part(57).y();
+
+                for (auto j = 48; j < 68; ++j) {
+                    const auto &part = shape.part(j);
+                    left_most_x = std::min(left_most_x, part.x());
+                    right_most_x = std::max(right_most_x, part.x());
+
+                    top_most_y = std::min(top_most_y, part.y());
+                    bottom_most_y = std::max(bottom_most_y, part.y());
+                }
+
+                const auto border = 10;
+                left_most_x -= border;
+                right_most_x += border;
+                top_most_y -= border;
+                bottom_most_y += border;
+
+                if (left_most_x >= 0 && right_most_x < img.nc() && top_most_y >= 0 && bottom_most_y < img.nr()) {
+
+                    dlib::array2d<uint8_t> mouth_chip(mouth_height, mouth_width);
+                    std::array<dlib::dpoint, 4> mouth_bounding_box;
+                    mouth_bounding_box[0] = dlib::dpoint(left_most_x, top_most_y);
+                    mouth_bounding_box[1] = dlib::dpoint(left_most_x, bottom_most_y);
+                    mouth_bounding_box[
