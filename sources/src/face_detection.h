@@ -48,4 +48,23 @@ namespace neuon{
                     std::array<dlib::dpoint, 4> mouth_bounding_box;
                     mouth_bounding_box[0] = dlib::dpoint(left_most_x, top_most_y);
                     mouth_bounding_box[1] = dlib::dpoint(left_most_x, bottom_most_y);
-                    mouth_bounding_box[
+                    mouth_bounding_box[2] = dlib::dpoint(right_most_x, top_most_y);
+                    mouth_bounding_box[3] = dlib::dpoint(right_most_x, bottom_most_y);
+                    dlib::extract_image_4points(img, mouth_chip, mouth_bounding_box);
+
+                    return mouth_chip;
+                }
+            }
+            return {};
+        }
+
+    private:
+        dlib::frontal_face_detector detector{dlib::get_frontal_face_detector()};
+        dlib::shape_predictor sp;
+
+        const size_t mouth_width;
+        const size_t mouth_height;
+    };
+}
+
+
