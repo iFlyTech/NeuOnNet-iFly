@@ -40,4 +40,28 @@ def main():
         with gfile.FastGFile(options.model, 'rb') as model:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(model.read())
-          
+            sess.graph.as_default()
+            g_in = tf.import_graph_def(graph_def)
+
+        print('===== output operation names =====\n')
+        for op in sess.graph.get_operations():
+            print(op)
+
+        tensor_output = sess.graph.get_tensor_by_name('import/lambda_1/Sqrt:0')
+        tensor_input_video = sess.graph.get_tensor_by_name('import/input_1:0')
+        tensor_input_audio = sess.graph.get_tensor_by_name('import/input_2:0')
+
+        predictions = sess.run(tensor_output, {tensor_input_video: datalist.data[0], tensor_input_audio: datalist.data[1]})
+
+        for idx, (video_pts, predicted_distance) in enumerate(zip(timestamps, predictions)):
+            print("Video sample #%d at %7d ms is %5.2f %% differs from audio. Is in sync? %s" % (idx, video_pts / 1000, predicted_distance * 100, predicted_distance < 0.5))
+
+        te_acc = neuon.details.primitives.compute_accuracy(distance, predictions)
+        print('* Match: %0.2f%%' % (100 * te_acc))
+
+        result = numpy.mean(predictions.ravel()) < 0.5
+        print("In average stream is in sync: %s " % result)
+
+
+if __name__ == '__main__':
+    ma
