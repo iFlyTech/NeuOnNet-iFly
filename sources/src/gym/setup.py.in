@@ -33,4 +33,15 @@ setuptools.setup(
         'pandas',
         'pydot',
         'pyparsing',
-        't
+        'tensorflow',
+        'neuon-details'
+    ],
+    entry_points={
+        'console_scripts': [
+            'neuon-train=neuon.gym.train:main',
+            'neuon-export=neuon.gym.export:main'
+        ]
+    }
+)
+
+
