@@ -31,4 +31,17 @@ std::vector<float> model_t::predict(const dlib::matrix<uint8_t> &x_video, const 
     static const std::string input_layer_audio_name = "input_2";
     static const std::string output_layer_name = "lambda_1/Sqrt";
 
-    std::vector<TF_Output> inputs{{api->TF_GraphOperationByName(graph, input_layer_video_name.c_str()), 0}, {api->TF_
+    std::vector<TF_Output> inputs{{api->TF_GraphOperationByName(graph, input_layer_video_name.c_str()), 0}, {api->TF_GraphOperationByName(graph, input_layer_audio_name.c_str()), 0}};
+    TF_Output output = {api->TF_GraphOperationByName(graph, output_layer_name.c_str()), 0};
+
+    auto video_tensor = api->TF_AllocateTensor(TF_FLOAT, video_dims.data(), static_cast<int>(video_dims.size()), x_video.size() *  sizeof(float));
+    boost::numeric::ublas::tensor<float> r_video(boost::numeric::ublas::shape({static_cast<size_t>(x_video.nr()), static_cast<size_t>(x_video.nc())}));
+    std::copy(x_video.begin(), x_video.end(), r_video.begin());
+    r_video.reshape({static_cast<size_t>(video_dims[3]),  static_cast<size_t>(video_dims[2]), static_cast<size_t>(video_dims[1]) });
+    r_video -= normalization.video.mean;
+    r_video /= normalization.video.std;
+
+    std::copy(r_video.begin(), r_video.end(), reinterpret_cast<float*>(api->TF_TensorData(video_tensor)));
+
+    auto audio_tensor = api->TF_AllocateTensor(TF_FLOAT, audio_dims.data(), static_cast<int>(audio_dims.size()), x_audio.size() *  sizeof(float));
+    boost::numeric::ublas::tensor<float> r_audio(boost::numeric::ublas::shape({static_cast<size_t>(x
