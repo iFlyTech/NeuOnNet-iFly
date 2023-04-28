@@ -44,4 +44,25 @@ std::vector<float> model_t::predict(const dlib::matrix<uint8_t> &x_video, const 
     std::copy(r_video.begin(), r_video.end(), reinterpret_cast<float*>(api->TF_TensorData(video_tensor)));
 
     auto audio_tensor = api->TF_AllocateTensor(TF_FLOAT, audio_dims.data(), static_cast<int>(audio_dims.size()), x_audio.size() *  sizeof(float));
-    boost::numeric::ublas::tensor<float> r_audio(boost::numeric::ublas::shape({static_cast<size_t>(x
+    boost::numeric::ublas::tensor<float> r_audio(boost::numeric::ublas::shape({static_cast<size_t>(x_audio.nr()), static_cast<size_t>(x_audio.nc())}));
+    std::copy(x_audio.begin(), x_audio.end(), r_audio.begin());
+    r_audio.reshape({static_cast<size_t>(audio_dims[3]), static_cast<size_t>(audio_dims[2]), static_cast<size_t>(audio_dims[1])});
+    r_audio -= normalization.audio.mean;
+    r_audio /= normalization.audio.std;
+
+    std::copy(r_audio.begin(), r_audio.end(), reinterpret_cast<float*>(api->TF_TensorData(audio_tensor)));
+
+    std::vector<tensorflow::tensor_ptr> input_tensors;
+    input_tensors.emplace_back(std::move(video_tensor));
+    input_tensors.emplace_back(std::move(audio_tensor));
+
+    std::vector<int64_t> dims(1, 1);
+    tensorflow:: tensor_ptr output_tensor = api->TF_AllocateTensor(TF_FLOAT, dims.data(), dims.size(), sizeof(float));
+    *reinterpret_cast<float*>(api->TF_TensorData(output_tensor)) = 0.0f;
+
+    tensorflow::status_ptr status( api->TF_NewStatus() );
+    tensorflow::buffer_ptr run_metadata;
+    api->TF_SessionRun(session, nullptr,
+                       inputs.data(), input_tensors.data(), inputs.size(),
+                       &output, &output_tensor, 1,
+                     
