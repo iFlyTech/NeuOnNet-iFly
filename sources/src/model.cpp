@@ -65,4 +65,13 @@ std::vector<float> model_t::predict(const dlib::matrix<uint8_t> &x_video, const 
     api->TF_SessionRun(session, nullptr,
                        inputs.data(), input_tensors.data(), inputs.size(),
                        &output, &output_tensor, 1,
-                     
+                       nullptr, 0,
+                       run_metadata,
+                       status);
+
+    std::vector<float> prediction(reinterpret_cast<float*>(api->TF_TensorData(output_tensor)), reinterpret_cast<float*>(api->TF_TensorData(output_tensor)) + api->TF_TensorElementCount(output_tensor));
+    return prediction;
+}
+
+
+
