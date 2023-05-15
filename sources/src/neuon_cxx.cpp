@@ -42,4 +42,7 @@ void neuon::neuon_t::put(const neuon::video_sample_t &sample) {
 }
 
 uint64_t neuon::target_audio_samplerate(const std::chrono::microseconds& video_frame_duration) {
-    const std::chrono::microseconds audio_slice_estimation(video_frame_duration * neuon::video_frames
+    const std::chrono::microseconds audio_slice_estimation(video_frame_duration * neuon::video_frames_per_entry / neuon::audio_samples_per_entry);
+    const uint64_t target_audio_samplerate = std::chrono::microseconds::period::den * neuon::fft_samples_per_entry / audio_slice_estimation.count();
+    return target_audio_samplerate;
+}
