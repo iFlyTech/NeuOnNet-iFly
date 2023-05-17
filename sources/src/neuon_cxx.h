@@ -34,4 +34,13 @@ namespace neuon {
         neuon_t(std::unique_ptr<neuon::face_detection_t> face_detection, std::unique_ptr<neuon::speech_detection_t> speech_detection, std::unique_ptr<neuon::composer_t> composer);
         ~neuon_t();
         void put(const audio_sample_t& sample);
-        void put(const vide
+        void put(const video_sample_t& sample);
+
+    protected:
+        std::unique_ptr<neuon::face_detection_t> face_detection;
+        std::unique_ptr<neuon::speech_detection_t> speech_detection;
+        std::unique_ptr<neuon::composer_t> composer;
+    };
+
+    uint64_t target_audio_samplerate(const std::chrono::microseconds& video_frame_duration);
+}
