@@ -42,4 +42,37 @@ int main(int argc, char **argv){
     po::positional_options_description pos_opt_desc;
     po::variables_map varmap;
     if( !options::is_args_valid(argc, argv, opt_desc, pos_opt_desc, varmap, std::cerr, std::cout ) ) {
-        retu
+        return 1;
+    }
+
+    std::string license_payload;
+    std::ifstream license_file(license_filename);
+    if(license_file){
+        std::getline(license_file, license_payload);
+    }
+
+    common::license_t license(license_payload);
+    if(license.demo()){
+        try{
+            common::demo_t demo;
+        } catch (const common::demo_exception_t & e ){
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
+    }
+
+    std::ifstream model_file(model_filename, std::ios::binary);
+    if(!model_file){
+        logging::debug() << "Model content is not available. check the file " << model_filename;
+        return 1;
+    }
+
+    std::vector<uint8_t> payload(boost::filesystem::file_size(model_filename));
+    model_file.read(reinterpret_cast<char *>(payload.data()), payload.size());
+
+    std::unique_ptr<tensorflow::api_t> tensorflow(new tensorflow::static_backend_t());
+    neuon::model_t model(std::shared_ptr<tensorflow::api_t>(std::move(tensorflow)), payload);
+
+    extraction_t extraction(media_filename, face_landmark_db, [&model](
+        const dlib::matrix<uint8_t>& video_set,
+        const std::ch
