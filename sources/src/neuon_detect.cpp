@@ -75,4 +75,25 @@ int main(int argc, char **argv){
 
     extraction_t extraction(media_filename, face_landmark_db, [&model](
         const dlib::matrix<uint8_t>& video_set,
-        const std::ch
+        const std::chrono::microseconds& first_video_pts,
+        const std::chrono::microseconds& last_video_pts,
+        const dlib::matrix<double>& audio_set,
+        const std::chrono::microseconds& first_audio_pts,
+        const std::chrono::microseconds last_audio_pts){
+
+        static uint32_t counter = 0;
+        auto prediction = model.predict(video_set, {1, 9, 60, 100, 1}, audio_set, {1, 3, 45, 15, 1});
+        logging::info() << "Video sample #" << counter << " at " << first_video_pts.count() << " is " << prediction[0] * 100 << " % " << " differs from audio. Is in sync? " << bool(prediction[0] < 0.5);
+        counter++;
+
+
+    });
+
+    interruption_t interruption;
+    signal_handler_tt<SIGINT>([&interruption](int signal){interruption.interrupt();});
+    signal_handler_tt<SIGTERM>([&interruption](int signal){interruption.interrupt();});
+
+    extraction.src->run(interruption);
+
+    return 0;
+}
