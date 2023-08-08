@@ -32,4 +32,24 @@ def main():
 
     if options.dataset is not None:
         test_generator = neuon.details.primitives.predict_generator_t(options.dataset, 32)
-        test_generator.vi
+        test_generator.video_scale = video_scale
+        test_generator.audio_scale = audio_scale
+
+        predictions = model.predict_generator(generator=test_generator, verbose=1)
+        distance = test_generator.distance[:]
+        timestamps = test_generator.timestamps[:, 0]
+    else:
+        try:
+            datalist = neuon.details.primitives.datalist_t(options.datalist, video_scale, audio_scale)
+            predictions = model.predict(datalist.data, verbose=1)
+            distance = datalist.distance
+            timestamps = datalist.timestamps[:, 0]
+        except ValueError as e:
+            print("WARN: It seems no data samples were extracted from the file to use to make a prediction so we just exit.")
+            print("WARN: Please contact to the author and share your movie clip to help with improving this product.")
+            return
+
+    for idx, (video_pts, predicted_distance) in enumerate(zip(timestamps, predictions)):
+        print("Video sample #%d at %7d ms is %5.2f %% differs from audio. Is in sync? %s" % (idx, video_pts / 1000, predicted_distance * 100, predicted_distance < 0.5))
+
+    te_acc = neuon.d
