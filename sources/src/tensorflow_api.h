@@ -40,4 +40,19 @@ namespace tensorflow{
         virtual void TF_SessionRun( session_ptr& session, const buffer_ptr& run_options,
                                     const TF_Output* inputs, const tensor_ptr* input_values, int ninputs,
                                     const TF_Output* outputs, tensor_ptr* output_values, int noutputs,
-                                    const TF_Operation* c
+                                    const TF_Operation* const* target_opers, int ntargets,
+                                    buffer_ptr& run_metadata, status_ptr& status) = 0;
+
+        virtual void* TF_TensorData(const tensor_ptr& tensor) = 0;
+        virtual size_t TF_TensorByteSize(const tensor_ptr& tensor) = 0;
+        virtual int64_t TF_TensorElementCount(const tensor_ptr& tensor) = 0;
+
+        virtual const char* TF_OperationName(TF_Operation* oper) = 0;
+        virtual TF_Operation* TF_GraphNextOperation(graph_ptr& graph, size_t* pos) = 0;
+    };
+
+    class impl_t{
+    protected:
+        static std::vector<TF_Tensor*> unbox_ptr_collection(const tensorflow::tensor_ptr * begin, int count );
+    };
+}
