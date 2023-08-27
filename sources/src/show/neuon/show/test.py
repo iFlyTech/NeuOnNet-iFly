@@ -52,4 +52,14 @@ def main():
     for idx, (video_pts, predicted_distance) in enumerate(zip(timestamps, predictions)):
         print("Video sample #%d at %7d ms is %5.2f %% differs from audio. Is in sync? %s" % (idx, video_pts / 1000, predicted_distance * 100, predicted_distance < 0.5))
 
-    te_acc = neuon.d
+    te_acc = neuon.details.primitives.compute_accuracy(distance, predictions)
+    print('* Match: %0.2f%%' % (100 * te_acc))
+
+    result = numpy.mean(predictions.ravel()) < 0.5
+    print("In average stream is in sync: %s " % result)
+
+
+if __name__ == '__main__':
+    main()
+
+
