@@ -1,0 +1,1 @@
+# NEUON Supercharged\nNeuOn - Improved Neural Network Primarily Focused on Lip Sync detection in video streaming under the ownership of iFlyTech.\n\n##Concept\n\nCheck out these research papers for a deeper dive into the concept:\n\n

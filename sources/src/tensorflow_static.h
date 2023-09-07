@@ -22,4 +22,19 @@ namespace tensorflow{
         void TF_GraphImportGraphDef(graph_ptr &graph, const buffer_ptr &graph_def,
                                     const import_graph_def_options_ptr &options, status_ptr &status) override;
         TF_Operation *TF_GraphOperationByName(graph_ptr &graph, const char *oper_name) override;
-        tensor_ptr TF_AllocateTensor(TF_DataType, const int64_t *dims, int n
+        tensor_ptr TF_AllocateTensor(TF_DataType, const int64_t *dims, int num_dims, size_t len) override;
+        void TF_SessionRun(session_ptr &session, const buffer_ptr &run_options,
+                           const TF_Output *inputs, const tensor_ptr *input_values, int ninputs,
+                           const TF_Output *outputs, tensor_ptr *output_values, int noutputs,
+                           const TF_Operation *const *target_opers, int ntargets,
+                           buffer_ptr &run_metadata, status_ptr &status) override;
+        void *TF_TensorData(const tensor_ptr & tensor) override;
+        size_t TF_TensorByteSize(const tensor_ptr & tensor) override;
+        int64_t TF_TensorElementCount(const tensor_ptr& tensor) override;
+
+        const char* TF_OperationName(TF_Operation* oper) override;
+        TF_Operation* TF_GraphNextOperation(graph_ptr& graph, size_t* pos) override;
+    private:
+        using impl_t::unbox_ptr_collection;
+    };
+}
